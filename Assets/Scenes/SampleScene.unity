@@ -155,9 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9656ea7e37bd91458192321cb08f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
-  damage: 10
-  color: {r: 0, g: 1, b: 0.51428366, a: 1}
+  type: {fileID: 11400000, guid: d6dd1c81c5a080d48a8c2788f9588cbe, type: 2}
 --- !u!136 &121168707
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -363,9 +361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9656ea7e37bd91458192321cb08f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
-  damage: 10
-  color: {r: 0.16269541, g: 1, b: 0, a: 1}
+  type: {fileID: 11400000, guid: 5bb46e8cf638dcf448436cebf0efbbdd, type: 2}
 --- !u!136 &819580286
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -561,9 +557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9656ea7e37bd91458192321cb08f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 3.5
-  damage: 10
-  color: {r: 1, g: 0, b: 0, a: 1}
+  type: {fileID: 11400000, guid: d6b89aa9314665043b8fe38c1dda039c, type: 2}
 --- !u!136 &1094486462
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -675,9 +669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9656ea7e37bd91458192321cb08f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
-  damage: 10
-  color: {r: 1, g: 0, b: 0, a: 1}
+  type: {fileID: 11400000, guid: d6dd1c81c5a080d48a8c2788f9588cbe, type: 2}
 --- !u!136 &1144223564
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -868,9 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9656ea7e37bd91458192321cb08f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
-  damage: 10
-  color: {r: 1, g: 0, b: 0, a: 1}
+  type: {fileID: 11400000, guid: d6b89aa9314665043b8fe38c1dda039c, type: 2}
 --- !u!1 &1962690981
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,9 +893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9656ea7e37bd91458192321cb08f18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
-  damage: 10
-  color: {r: 0.6382859, g: 1, b: 0, a: 1}
+  type: {fileID: 11400000, guid: 5bb46e8cf638dcf448436cebf0efbbdd, type: 2}
 --- !u!136 &1962690983
 CapsuleCollider:
   m_ObjectHideFlags: 0
