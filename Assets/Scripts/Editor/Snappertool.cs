@@ -1,4 +1,3 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,8 +8,14 @@ public class Snappertool : EditorWindow {
     [MenuItem( "Tools / Snapper %&S" )]
     public static void OpenWindow () => GetWindow<Snappertool>( "Snapper" );
 
+
+    private void OnEnable () => Selection.selectionChanged += Repaint;
+    private void OnDisable () => Selection.selectionChanged -= Repaint;
+
+
     private void OnGUI () {
-        if ( GUILayout.Button( "Snap Selection" ) ) Snap();
+        using ( new EditorGUI.DisabledScope( Selection.gameObjects.Length == 0 ) )
+            if ( GUILayout.Button( "Snap Selection" ) ) Snap();
     }
 
     private void Snap () {
