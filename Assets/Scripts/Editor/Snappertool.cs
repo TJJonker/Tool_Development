@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Snappertool : EditorWindow {
 
@@ -38,7 +39,29 @@ public class Snappertool : EditorWindow {
     }
 
     private void DuringSceneGUI(SceneView view ) {
+        Handles.zTest = CompareFunction.LessEqual;
+        Handles.color = Color.gray;
 
+        const float range = 15; 
+        int amountOfLines = (int)( range * 2 / gridSize);
+        if ( amountOfLines % 2 == 0 ) amountOfLines++;
+
+        int halfPoint = amountOfLines / 2;
+
+        for(int i = 0; i < amountOfLines; i++ ) {
+            int lineIndex = i - halfPoint;
+
+            Vector3 pointAA = new Vector3( lineIndex * gridSize, 0, -range );
+            Vector3 pointAB = new Vector3( lineIndex * gridSize, 0, +range );
+            
+            Vector3 pointBA = new Vector3( -range, 0, lineIndex * gridSize );
+            Vector3 pointBB = new Vector3( +range, 0, lineIndex * gridSize );
+
+            
+
+            Handles.DrawAAPolyLine( pointAA, pointAB );
+            Handles.DrawAAPolyLine( pointBA, pointBB );
+        }
     }
 
     private void Snap () {
