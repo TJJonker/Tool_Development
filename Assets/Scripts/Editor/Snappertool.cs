@@ -95,11 +95,13 @@ public class Snappertool : EditorWindow {
 
     private void DrawGridPolar ( float range ) {
 
+        // Drawing rings
         int amountOfRings = (int) ( range / gridSize ) + 1;
         for ( int i = 1; i < amountOfRings; i++ ) {
             Handles.DrawWireDisc( Vector3.zero, Vector3.up, i * gridSize );
         }
 
+        // Drawing angled lines
         float angleBetweenDivisions = 360f / angularDivision;
         for ( int i = 0; i < angularDivision; i++ ) {
             var rads = Mathf.Deg2Rad * angleBetweenDivisions * i;
@@ -113,7 +115,32 @@ public class Snappertool : EditorWindow {
     private void Snap () {
         foreach ( GameObject g in Selection.gameObjects ) {
             Undo.RecordObject( g.transform, UNDO_SNAP_TEXT );
-            g.transform.position = g.transform.position.Round( gridSize );
+            g.transform.position = GetSnappedPosition(g.transform.position);
         }
+    }
+
+    private Vector3 GetSnappedPosition(Vector3 originalPosition ) {
+        
+        // Cartesian Snapping 
+        if ( gridType == GridType.Cartesian ) 
+            return originalPosition.Round( gridSize );
+
+        // Polar Snapping
+        if(gridType == GridType.Polar ) {
+
+            // Ranged snapping
+            var distance = originalPosition.magnitude;
+            var snappedDistance = distance.Round( gridSize );
+
+            // Angular snapping
+            var rad = Mathf.Atan2( originalPosition.z, originalPosition.x );
+            var angleBetweenDivisions = 360f / angularDivision;
+            var snappedAngle = ( rad ).Round( angleBetweenDivisions * Mathf.Deg2Rad );
+
+            var newPos = new Vector2( Mathf.Cos( snappedAngle ), Mathf.Sin( snappedAngle ) ) * snappedDistance;
+            return new Vector3( newPos.x, originalPosition.y, newPos.y );
+        }
+
+        return default;
     }
 }

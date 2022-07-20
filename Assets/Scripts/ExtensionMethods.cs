@@ -8,7 +8,6 @@ public static class ExtensionMethods {
         return v;
     }
 
-    public static Vector3 Round ( this Vector3 v, float gridsize ) {
-        return ( v / gridsize ).Round() * gridsize;
-    }
+    public static Vector3 Round ( this Vector3 v, float roundingPoint ) => ( v / roundingPoint ).Round() * roundingPoint;
+    public static float Round ( this float f, float roundingPoint ) => Mathf.Round( f / roundingPoint ) * roundingPoint;
 }
