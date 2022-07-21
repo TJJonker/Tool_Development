@@ -83,9 +83,12 @@ public class ObjectScatterTool : EditorWindow {
 
         Handles.color = Color.white;
         foreach ( Vector2 p in generatedPoints ) {
-            var pos = hit.point + ( tangent * p.x + biTangent * p.y ) * range;
-            Handles.DrawAAPolyLine( pos, pos + hit.normal );
-            Handles.DrawSolidDisc( pos, hit.normal, .1f );
+            var originalPos = hit.point + ( tangent * p.x + biTangent * p.y ) * range;
+            Ray newPosRay = new Ray( originalPos + hit.normal * 3, -hit.normal );
+            Physics.Raycast( newPosRay, out RaycastHit newPosHit );
+
+            Handles.DrawAAPolyLine( newPosHit.point, newPosHit.point + newPosHit.normal );
+            Handles.DrawSolidDisc( newPosHit.point, newPosHit.normal, .1f );
         }
     }
 
