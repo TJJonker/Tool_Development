@@ -23,7 +23,7 @@ public class Snappertool : EditorWindow {
     SerializedProperty propAngularDivision;
 
 
-    [MenuItem( "Tools / Snapper %&S" )]
+    [MenuItem( "Tools / Jonkos / Snapper %&S" )]
     public static void OpenWindow () => GetWindow<Snappertool>( "Snapper" );
 
 
