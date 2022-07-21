@@ -16,10 +16,10 @@ public class Snappertool : EditorWindow {
     [SerializeField] float gridSize = 1f;
     SerializedProperty propGridSize;
 
-    [SerializeField] GridType gridType;
+    [SerializeField] GridType gridType = GridType.Cartesian;
     SerializedProperty propGridType;
 
-    [SerializeField] int angularDivision;
+    [SerializeField] int angularDivision = 24;
     SerializedProperty propAngularDivision;
 
 
@@ -33,11 +33,19 @@ public class Snappertool : EditorWindow {
         propGridType = so.FindProperty( "gridType" );
         propAngularDivision = so.FindProperty( "angularDivision" );
 
+        gridSize = EditorPrefs.GetFloat( "SNAPPER_TOOL_GRIDSIZE", 1f );
+        gridType = (GridType)EditorPrefs.GetInt( "SNAPPER_TOOL_GRIDTYPE", 0 );
+        angularDivision = EditorPrefs.GetInt( "SNAPPER_TOOL_ANGULARDIVISION", 24 );
+
         Selection.selectionChanged += Repaint;
         SceneView.duringSceneGui += DuringSceneGUI;
     }
 
     private void OnDisable () {
+        EditorPrefs.SetFloat( "SNAPPER_TOOL_GRIDSIZE", gridSize );
+        EditorPrefs.SetInt( "SNAPPER_TOOL_GRIDTYPE", (int)gridType );
+        EditorPrefs.SetInt( "SNAPPER_TOOL_ANGULARDIVISION", angularDivision );
+
         Selection.selectionChanged -= Repaint;
         SceneView.duringSceneGui -= DuringSceneGUI;
     }
