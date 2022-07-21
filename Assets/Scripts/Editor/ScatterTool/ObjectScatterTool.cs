@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ObjectScatterTool : EditorWindow {
 
@@ -61,8 +62,12 @@ public class ObjectScatterTool : EditorWindow {
         var tangent = Vector3.Cross( hit.normal, cameraTransform.up ).normalized;
         var biTangent = Vector3.Cross( hit.normal, tangent );
 
+
+
+
+        Handles.zTest = CompareFunction.LessEqual;
         Handles.color = Color.blue;
-        Handles.DrawSolidDisc( hit.point, hit.normal, .05f );
+        Handles.DrawWireDisc( hit.point, hit.normal, range );
         Handles.DrawAAPolyLine(5f, hit.point, hit.point + hit.normal );
         Handles.color = Color.red;
         Handles.DrawAAPolyLine(5f, hit.point, hit.point + tangent);
