@@ -54,7 +54,20 @@ public class ObjectScatterTool : EditorWindow {
     }
 
     private void DuringSceneGUI(SceneView sceneView ) {
+        var cameraTransform = sceneView.camera.transform;
+        Ray ray = new Ray( cameraTransform.position, cameraTransform.forward );
+        Physics.Raycast( ray, out RaycastHit hit);
 
+        var tangent = Vector3.Cross( hit.normal, cameraTransform.up ).normalized;
+        var biTangent = Vector3.Cross( hit.normal, tangent );
+
+        Handles.color = Color.blue;
+        Handles.DrawSolidDisc( hit.point, hit.normal, .05f );
+        Handles.DrawAAPolyLine(5f, hit.point, hit.point + hit.normal );
+        Handles.color = Color.red;
+        Handles.DrawAAPolyLine(5f, hit.point, hit.point + tangent);
+        Handles.color = Color.green;
+        Handles.DrawAAPolyLine( 5f, hit.point, hit.point + biTangent );
     }
 
 }
