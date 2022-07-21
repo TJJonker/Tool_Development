@@ -11,16 +11,19 @@ public class ObjectScatterTool : EditorWindow {
     private const string RANGE_SAVE_STRING = "OBJECT_SCATTER_TOOL_RANGE";
     private const string AMOUNT_SAVE_STRING = "OBJECT_SCATTER_TOOL_AMOUNT";
 
-    private const int MINIMUM_RANGE_VALUE   = 1;
-    private const int MAXIMUM_RANGE_VALUE   = 30;
-    private const int MINIMUM_AMOUNT_VALUE  = 1;
-    private const int MAXIMUM_AMOUNT_VALUE  = 100;
+    private const int MINIMUM_RANGE_VALUE = 1;
+    private const int MAXIMUM_RANGE_VALUE = 30;
+    private const int MINIMUM_AMOUNT_VALUE = 1;
+    private const int MAXIMUM_AMOUNT_VALUE = 100;
 
-    SerializedObject    so;
-    SerializedProperty  propRange;
-    [SerializeField]    private float range;
-    SerializedProperty  propAmount;
-    [SerializeField]    private int amount;
+    SerializedObject so;
+    SerializedProperty propRange;
+    [SerializeField] private float range;
+    SerializedProperty propAmount;
+    [SerializeField] private int amount;
+
+    private Vector2[] generatedPoints;
+    private Vector3[] positions;
 
 
     private void OnEnable () {
@@ -28,8 +31,10 @@ public class ObjectScatterTool : EditorWindow {
         propRange = so.FindProperty( "range" );
         propAmount = so.FindProperty( "amount" );
 
-        range  = EditorPrefs.GetFloat( RANGE_SAVE_STRING, MINIMUM_RANGE_VALUE );
+        range = EditorPrefs.GetFloat( RANGE_SAVE_STRING, MINIMUM_RANGE_VALUE );
         amount = EditorPrefs.GetInt( AMOUNT_SAVE_STRING, MINIMUM_AMOUNT_VALUE );
+
+        GenerateRandomPoints();
 
         SceneView.duringSceneGui += DuringSceneGUI;
     }
@@ -51,28 +56,43 @@ public class ObjectScatterTool : EditorWindow {
         EditorGUILayout.PropertyField( propAmount );
         propAmount.intValue = propAmount.intValue.Between( MINIMUM_AMOUNT_VALUE, MAXIMUM_AMOUNT_VALUE );
 
-        so.ApplyModifiedProperties();
+        if ( so.ApplyModifiedProperties() ) {
+            GenerateRandomPoints();
+            SceneView.RepaintAll();
+        }
     }
 
-    private void DuringSceneGUI(SceneView sceneView ) {
+    private void DuringSceneGUI ( SceneView sceneView ) {
+        if ( Event.current.type != EventType.Repaint ) return;
+
         var cameraTransform = sceneView.camera.transform;
         Ray ray = new Ray( cameraTransform.position, cameraTransform.forward );
-        Physics.Raycast( ray, out RaycastHit hit);
+        Physics.Raycast( ray, out RaycastHit hit );
 
         var tangent = Vector3.Cross( hit.normal, cameraTransform.up ).normalized;
         var biTangent = Vector3.Cross( hit.normal, tangent );
 
-
-
-
         Handles.zTest = CompareFunction.LessEqual;
         Handles.color = Color.blue;
         Handles.DrawWireDisc( hit.point, hit.normal, range );
-        Handles.DrawAAPolyLine(5f, hit.point, hit.point + hit.normal );
+        Handles.DrawAAPolyLine( 5f, hit.point, hit.point + hit.normal );
         Handles.color = Color.red;
-        Handles.DrawAAPolyLine(5f, hit.point, hit.point + tangent);
+        Handles.DrawAAPolyLine( 5f, hit.point, hit.point + tangent );
         Handles.color = Color.green;
         Handles.DrawAAPolyLine( 5f, hit.point, hit.point + biTangent );
+
+        Handles.color = Color.white;
+        foreach ( Vector2 p in generatedPoints ) {
+            var pos = hit.point + ( tangent * p.x + biTangent * p.y ) * range;
+            Handles.DrawAAPolyLine( pos, pos + hit.normal );
+            Handles.DrawSolidDisc( pos, hit.normal, .1f );
+        }
+    }
+
+    private void GenerateRandomPoints () {
+        generatedPoints = new Vector2[ amount ];
+        for ( int i = 0; i < amount; i++ )
+            generatedPoints[ i ] = Random.insideUnitCircle;
     }
 
 }
