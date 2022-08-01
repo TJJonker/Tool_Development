@@ -61,7 +61,7 @@ public class ObjectScatterTool : EditorWindow {
             SceneView.RepaintAll();
         }
 
-        if(Event.current.type == EventType.MouseDown && Event.current.button == 0 ) {
+        if ( Event.current.type == EventType.MouseDown && Event.current.button == 0 ) {
             GUI.FocusControl( null );
             Repaint();
         }
@@ -72,7 +72,7 @@ public class ObjectScatterTool : EditorWindow {
 
 
         bool ctrlHeld = ( Event.current.modifiers & EventModifiers.Control ) != 0;
-        if(Event.current.type == EventType.ScrollWheel && ctrlHeld) {
+        if ( Event.current.type == EventType.ScrollWheel && ctrlHeld ) {
             float scrollDir = Mathf.Sign( Event.current.delta.y );
 
             so.Update();
@@ -94,21 +94,39 @@ public class ObjectScatterTool : EditorWindow {
 
         Handles.zTest = CompareFunction.LessEqual;
         Handles.color = Color.blue;
-        Handles.DrawWireDisc( hit.point, hit.normal, range );
         Handles.DrawAAPolyLine( 5f, hit.point, hit.point + hit.normal );
         Handles.color = Color.red;
         Handles.DrawAAPolyLine( 5f, hit.point, hit.point + tangent );
         Handles.color = Color.green;
         Handles.DrawAAPolyLine( 5f, hit.point, hit.point + biTangent );
 
+        const int circleDetail = 64;
+        Vector3[] circlePosition = new Vector3[ circleDetail ];
+        for ( int i = 0; i < circleDetail; i++ ) {
+            // Split the circle up in equal parts/angles
+            var p = 360f / circleDetail * i;
+            var radP = p * Mathf.Deg2Rad;
+            // Calculate the positions from the calculated angle
+            Ray r = GetTangentRay( new Vector2( Mathf.Cos( radP ), Mathf.Sin( radP ) ) );
+            // Save position in an array
+            if ( Physics.Raycast( r, out RaycastHit h ) ) circlePosition[ i ] = h.point;
+            else circlePosition[ i ] = r.origin;
+        }
+
+        Handles.color = Color.blue;
+        Handles.DrawAAPolyLine( circlePosition );
+
+        Ray GetTangentRay ( Vector2 pointPosition ) {
+            var originalPos = hit.point + ( tangent * pointPosition.x + biTangent * pointPosition.y ) * range;
+            return new Ray( originalPos + hit.normal * 3, -hit.normal );
+        }
+
         Handles.color = Color.white;
         foreach ( Vector2 p in generatedPoints ) {
-            var originalPos = hit.point + ( tangent * p.x + biTangent * p.y ) * range;
-            Ray newPosRay = new Ray( originalPos + hit.normal * 3, -hit.normal );
-            Physics.Raycast( newPosRay, out RaycastHit newPosHit );
-
-            Handles.DrawAAPolyLine( newPosHit.point, newPosHit.point + newPosHit.normal );
-            Handles.DrawSolidDisc( newPosHit.point, newPosHit.normal, .1f );
+            if ( Physics.Raycast( GetTangentRay( p ), out RaycastHit newPosHit ) ) {
+                Handles.DrawAAPolyLine( newPosHit.point, newPosHit.point + newPosHit.normal );
+                Handles.DrawSolidDisc( newPosHit.point, newPosHit.normal, .1f );
+            }
         }
     }
 
