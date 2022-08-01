@@ -85,7 +85,8 @@ public class ObjectScatterTool : EditorWindow {
         if ( Event.current.type != EventType.Repaint ) return;
 
         var cameraTransform = sceneView.camera.transform;
-        Ray ray = new Ray( cameraTransform.position, cameraTransform.forward );
+        Ray ray = HandleUtility.GUIPointToWorldRay( Event.current.mousePosition );
+        //Ray ray = new Ray( cameraTransform.position, cameraTransform.forward );
         Physics.Raycast( ray, out RaycastHit hit );
 
         var tangent = Vector3.Cross( hit.normal, cameraTransform.up ).normalized;
