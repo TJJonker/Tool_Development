@@ -60,9 +60,28 @@ public class ObjectScatterTool : EditorWindow {
             GenerateRandomPoints();
             SceneView.RepaintAll();
         }
+
+        if(Event.current.type == EventType.MouseDown && Event.current.button == 0 ) {
+            GUI.FocusControl( null );
+            Repaint();
+        }
     }
 
     private void DuringSceneGUI ( SceneView sceneView ) {
+        if ( Event.current.type == EventType.MouseMove ) sceneView.Repaint();
+
+
+        bool ctrlHeld = ( Event.current.modifiers & EventModifiers.Control ) != 0;
+        if(Event.current.type == EventType.ScrollWheel && ctrlHeld) {
+            float scrollDir = Mathf.Sign( Event.current.delta.y );
+
+            so.Update();
+            propRange.floatValue *= 1f + scrollDir * .075f;
+            so.ApplyModifiedProperties();
+            Repaint();
+            Event.current.Use();
+        }
+
         if ( Event.current.type != EventType.Repaint ) return;
 
         var cameraTransform = sceneView.camera.transform;
