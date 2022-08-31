@@ -147,7 +147,7 @@ public class ObjectScatterTool : EditorWindow {
             Handles.DrawAAPolyLine( circlePosition );
             #endregion
 
-            #region Draw generated points and their normals
+            #region Draw mesh previews
             Handles.color = Color.white;
 
             Mesh mesh = prefab.GetComponent<MeshFilter>().sharedMesh;
@@ -155,8 +155,6 @@ public class ObjectScatterTool : EditorWindow {
             material.SetPass( 0 );
 
             foreach ( Pose hp in rayCastHits ) {
-                // Handles.DrawAAPolyLine( hp.point, hp.point + hp.normal );
-                // Handles.DrawSolidDisc( hp.point, hp.normal, .1f );
                 Graphics.DrawMeshNow( mesh, hp.position, hp.rotation );
             }
             #endregion
