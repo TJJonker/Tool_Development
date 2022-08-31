@@ -99,13 +99,20 @@ public class ObjectScatterTool : EditorWindow {
         }
 
 
-        List<RaycastHit> rayCastHits = new List<RaycastHit>();
-        foreach ( Vector2 p in generatedPoints )
-            if ( Physics.Raycast( GetTangentRay( p ), out RaycastHit h ) )
-                rayCastHits.Add( h );
+        List<Pose> rayCastHits = new List<Pose>();
+        foreach ( Vector2 p in generatedPoints ) {
+            if ( Physics.Raycast( GetTangentRay( p ), out RaycastHit h ) ) {
 
-        if ( ctrlHeld && Event.current.type == EventType.MouseDown ) 
-            TrySpawningObjects(rayCastHits);
+                Quaternion randomRotation = Quaternion.Euler( 0f, 0f, Random.value * 360 );
+                Quaternion rotation = Quaternion.LookRotation( h.normal ) * ( randomRotation * Quaternion.Euler( 90f, 0f, 0f ) );
+
+                Pose pose = new Pose( h.point, rotation );
+                rayCastHits.Add( pose );
+            }
+        }
+
+        if ( ctrlHeld && Event.current.type == EventType.MouseDown )
+            TrySpawningObjects( rayCastHits );
 
 
         if ( Event.current.type == EventType.MouseMove ) sceneView.Repaint();
@@ -142,9 +149,15 @@ public class ObjectScatterTool : EditorWindow {
 
             #region Draw generated points and their normals
             Handles.color = Color.white;
-            foreach ( RaycastHit hp in rayCastHits ) {
-                Handles.DrawAAPolyLine( hp.point, hp.point + hp.normal );
-                Handles.DrawSolidDisc( hp.point, hp.normal, .1f );
+
+            Mesh mesh = prefab.GetComponent<MeshFilter>().sharedMesh;
+            Material material = prefab.GetComponent<MeshRenderer>().sharedMaterial;
+            material.SetPass( 0 );
+
+            foreach ( Pose hp in rayCastHits ) {
+                // Handles.DrawAAPolyLine( hp.point, hp.point + hp.normal );
+                // Handles.DrawSolidDisc( hp.point, hp.normal, .1f );
+                Graphics.DrawMeshNow( mesh, hp.position, hp.rotation );
             }
             #endregion
         }
@@ -155,18 +168,16 @@ public class ObjectScatterTool : EditorWindow {
         }
     }
 
-    private void TrySpawningObjects ( List<RaycastHit> hitpts ) {
+    private void TrySpawningObjects ( List<Pose> hitpts ) {
         if ( prefab == null ) return;
-        foreach ( RaycastHit h in hitpts ) {
+        foreach ( Pose p in hitpts ) {
             GameObject spawnedObject = (GameObject) PrefabUtility.InstantiatePrefab( prefab );
             Undo.RegisterCreatedObjectUndo( spawnedObject, "Spawn Objects" );
 
-            spawnedObject.transform.position = h.point;
-            Quaternion randomRotation = Quaternion.Euler( 0f, 0f, Random.value * 360 );
-            Quaternion rotation = Quaternion.LookRotation( h.normal ) * ( randomRotation * Quaternion.Euler( 90f, 0f, 0f ));
-            spawnedObject.transform.rotation = rotation;
+            spawnedObject.transform.position = p.position;
+            spawnedObject.transform.rotation = p.rotation;
         }
-        GenerateRandomPoints(amount);
+        GenerateRandomPoints( amount );
     }
 
     private void GenerateRandomPoints ( int amountOfPoints ) {
