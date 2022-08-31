@@ -104,14 +104,8 @@ public class ObjectScatterTool : EditorWindow {
             if ( Physics.Raycast( GetTangentRay( p ), out RaycastHit h ) )
                 rayCastHits.Add( h );
 
-        if ( ctrlHeld && Event.current.type == EventType.MouseDown ) {
-            foreach ( RaycastHit h in rayCastHits ) {
-                GameObject spawnedObject = (GameObject) PrefabUtility.InstantiatePrefab( prefab );
-                Undo.RegisterCreatedObjectUndo( spawnedObject, "Spawn Objects" );
-                spawnedObject.transform.position = h.point;
-                spawnedObject.transform.rotation = Quaternion.LookRotation( h.normal ) * Quaternion.Euler( 90f, 0, 0 );
-            }
-        }
+        if ( ctrlHeld && Event.current.type == EventType.MouseDown ) 
+            TrySpawningObjects(rayCastHits);
 
 
         if ( Event.current.type == EventType.MouseMove ) sceneView.Repaint();
@@ -161,8 +155,22 @@ public class ObjectScatterTool : EditorWindow {
         }
     }
 
+    private void TrySpawningObjects ( List<RaycastHit> hitpts ) {
+        if ( prefab == null ) return;
+        foreach ( RaycastHit h in hitpts ) {
+            GameObject spawnedObject = (GameObject) PrefabUtility.InstantiatePrefab( prefab );
+            Undo.RegisterCreatedObjectUndo( spawnedObject, "Spawn Objects" );
+
+            spawnedObject.transform.position = h.point;
+            Quaternion randomRotation = Quaternion.Euler( 0f, 0f, Random.value * 360 );
+            Quaternion rotation = Quaternion.LookRotation( h.normal ) * ( randomRotation * Quaternion.Euler( 90f, 0f, 0f ));
+            spawnedObject.transform.rotation = rotation;
+        }
+        GenerateRandomPoints(amount);
+    }
+
     private void GenerateRandomPoints ( int amountOfPoints ) {
-        generatedPoints = new Vector2[amountOfPoints];
+        generatedPoints = new Vector2[ amountOfPoints ];
         for ( int i = 0; i < amountOfPoints; i++ ) {
             generatedPoints[ i ] = Random.insideUnitCircle;
         }
